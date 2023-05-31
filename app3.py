@@ -11,7 +11,7 @@ import plotly.graph_objects as go
 df_occupation = pd.read_csv("jobdegrees-IT+FIELD.csv")
 df_job_ads = pd.read_csv('ITopps_T.csv')
 df_job_info = pd.read_csv('IToppsupdated-05-27extra.csv')
-all_industry_df = pd.read_csv(r"C:\Users\kelli\PycharmProjects\WebscrapingSeek\Careers scraping\daily industry\allindustry-comb05-28.csv")
+all_industry_df = pd.read_csv("allindustry-comb05-28.csv")
 
 # Create the Streamlit app
 # Sidebar options
