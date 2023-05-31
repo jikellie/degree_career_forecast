@@ -46,8 +46,7 @@ def main():
                 selected_job_ads = df_job_ads[[selected_occupation]]
 
                 # Add a column for the number of the next day's data
-                with pd.option_context('mode.use_inf_as_null', True):
-                    selected_job_ads['Next Day Jobs'] = selected_job_ads[selected_occupation].shift(-1)
+                selected_job_ads['Next Day Jobs'] = selected_job_ads[selected_occupation].shift(-1)
                 selected_job_ads.dropna(inplace=True)
 
                 # saving test data dataframe
