@@ -1,5 +1,3 @@
-# ## WORKING STREAMLIT APP WITH MODEL.
-#
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -7,20 +5,21 @@ import seaborn as sns
 import matplotlib.dates as mpl_dates
 from xgboost import XGBRegressor
 from sklearn.metrics import mean_squared_error
+import plotly.graph_objects as go
 
-# first dataset if degrees with connected broad field
+# Load the datasets
 df_occupation = pd.read_csv("jobdegrees-IT+FIELD.csv")
-
-# Second dataset of daily job opportunity numbers
 df_job_ads = pd.read_csv('ITopps_T.csv')
-df_job_ads['Date'] = pd.to_datetime(df_job_ads['Date'], format='%d/%m/%Y')   # Convert Date column to datetime type
-df_job_ads.set_index('Date', inplace=True)  # Set Date column as the index
-
-# third dataset with salary and qualification summary text
 df_job_info = pd.read_csv('IToppsupdated-05-27extra.csv')
+all_industry_df = pd.read_csv(r"C:\Users\kelli\PycharmProjects\WebscrapingSeek\Careers scraping\daily industry\allindustry-comb05-25.csv")
 
 # Create the Streamlit app
-def main():
+# Sidebar options
+sidebar_options = ["Degree Job Search", "Industry Trends"]
+selected_option = st.sidebar.selectbox("Select Option", sidebar_options)
+
+if selected_option == "Degree Job Search":
+    # Code for Degree Job Search page
     st.title("Degree Job Search")
 
     # Dropdown for broad_field selection
@@ -77,34 +76,7 @@ def main():
                 mse = mean_squared_error(y_test, xgb_pred)
                 r_squared = model.score(X_test, y_test)
 
-                st.write("Mean Squared Error:", mse)
-                st.write("R-squared:", r_squared)
-
                 test_data['predictions'] = xgb_pred
-
-                # Shift the index of test_data by 1 day *no longer need
-                #test_data.index = test_data.index + pd.DateOffset(days=1)
-
-                # Create a line graph with original values and predictions
-                plt.rcParams.update({'figure.figsize': (17, 3), 'figure.dpi': 300})
-                fig, ax = plt.subplots()
-                sns.lineplot(data=selected_job_ads, x=selected_job_ads.index, y='Next Day Jobs',
-                             label='Original Values')
-                sns.lineplot(data=test_data, x=test_data.index, y='predictions', color='red', label='Predictions')
-                plt.grid(linestyle='-', linewidth=0.3)
-                ax.tick_params(axis='x', rotation=90)
-
-                # Adjusting x-axis date labels
-                date_format = mpl_dates.DateFormatter('%Y-%m-%d')  # Customize the date format as per your data
-                ax.xaxis.set_major_formatter(date_format)
-                ax.xaxis.set_major_locator(plt.MaxNLocator(nbins=len(selected_job_ads)))
-
-                plt.legend()
-                st.pyplot(fig)
-
-                # Display the prediction dataframe
-                st.subheader("Test Data with Predictions:")
-                st.dataframe(test_data)
 
                 # adding salary and qualification info
                 job_info_row = df_job_info[df_job_info['name'] == selected_occupation]
@@ -116,16 +88,63 @@ def main():
                     if pd.isnull(qualification_text):
                         qualification_text = "No info"
 
-                    st.subheader("Salary Information:")
-                    st.write(salary_text)
+                    st.subheader("Average Salary:")
+                    st.markdown(f"<h3 style='color:green'>{salary_text}</h3>", unsafe_allow_html=True)
 
-                    st.subheader("Qualification:")
+                    st.subheader("Qualification requirements:")
                     st.write(qualification_text)
+
                 else:
                     st.warning("No salary and qualification information available for the selected job.")
+
+                # Create the line graph with original values and predictions
+                st.subheader(f"Time Series of Job Posts for {selected_occupation}")
+                plt.rcParams.update({'figure.figsize': (17, 3), 'figure.dpi': 300})
+                fig, ax = plt.subplots()
+                sns.lineplot(data=selected_job_ads, x=selected_job_ads.index, y='Next Day Jobs',
+                             label='Original Values')
+                sns.lineplot(data=test_data, x=test_data.index, y='predictions', color='red', label='Predictions')
+                plt.grid(linestyle='-', linewidth=0.3)
+                ax.tick_params(axis='x', rotation=90)
+
+                # Adjusting x-axis date labels
+                date_format = mpl_dates.DateFormatter('%Y-%m-%d')
+                ax.xaxis.set_major_formatter(date_format)
+                ax.xaxis.set_major_locator(plt.MaxNLocator(nbins=len(selected_job_ads)))
+
+                plt.legend()
+                st.pyplot(fig)
+
+                st.subheader("Model Accuracy:")
+                st.write("Mean Squared Error:", mse)
+                st.write("R-squared:", r_squared)
+
+                st.subheader("Test Data with Predictions dataframe:")
+                st.dataframe(test_data)
+
             else:
                 st.warning("Selected job is not available in the dataset.")
 
+elif selected_option == "Industry Trends":
+    st.header("Industry Trends")
 
-if __name__ == '__main__':
-    main()
+    # Create the dropdown menu for selecting the industry
+    selected_industry = st.selectbox("Select an industry", all_industry_df["industry"].unique())
+
+    # Filter the data for the selected industry
+    selected_industry_data = all_industry_df[all_industry_df["industry"] == selected_industry]
+
+    # Extract the time series data and dates
+    time_series_data = selected_industry_data.iloc[:, 1:].values.flatten()
+    dates = selected_industry_data.columns[1:]
+
+    # Remove NaN values from time series data and corresponding dates
+    valid_data_mask = ~pd.isnull(time_series_data)
+    time_series_data = time_series_data[valid_data_mask]
+    dates = dates[valid_data_mask]
+
+    # Create a line graph for the time series trend
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(x=dates, y=time_series_data, mode='lines', name='Job Postings'))
+    fig.update_layout(xaxis_title='Date', yaxis_title='Job Postings', title=f"Time Series Trend for {selected_industry}")
+    st.plotly_chart(fig)
