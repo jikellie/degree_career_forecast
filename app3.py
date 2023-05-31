@@ -107,23 +107,24 @@ def main():
                 st.dataframe(test_data)
 
                 # adding salary and qualification info
-                selected_job_info = df_job_info[(df_job_info['industry'] == selected_broad_field) & (df_job_info['name'] == selected_occupation)]
+                job_info_row = df_job_info[df_job_info['name'] == selected_occupation]
 
-                if not selected_job_info.empty:
-                    salary_text = selected_job_info['salary'].values[0]
-                    qualification_text = selected_job_info['qualification'].values[0]
+                if not job_info_row.empty:
+                    salary_text = job_info_row['salary'].values[0]
+                    qualification_text = job_info_row['qualification'].values[0]
+
+                    if pd.isnull(qualification_text):
+                        qualification_text = "No info"
 
                     st.subheader("Salary Information:")
                     st.write(salary_text)
 
                     st.subheader("Qualification:")
                     st.write(qualification_text)
-
                 else:
                     st.warning("No salary and qualification information available for the selected job.")
-
             else:
-                st.write("Selected occupation is not available in the dataset.")
+                st.warning("Selected job is not available in the dataset.")
 
 
 if __name__ == '__main__':
