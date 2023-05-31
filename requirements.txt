@@ -2,3 +2,4 @@ xgboost
 matplotlib
 seaborn
 scikit-learn
+sklearn
