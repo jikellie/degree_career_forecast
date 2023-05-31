@@ -18,7 +18,7 @@ df_job_ads.set_index('Date', inplace=True)  # Set Date column as the index
 
 # Create the Streamlit app
 def main():
-    st.title("Job Match App")
+    st.title("Degree Job Search")
 
     # Dropdown for broad_field selection
     broad_fields = sorted(df_occupation['broad_field'].astype(str).unique())
