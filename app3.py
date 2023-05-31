@@ -17,7 +17,7 @@ df_job_ads['Date'] = pd.to_datetime(df_job_ads['Date'], format='%d/%m/%Y')   # C
 df_job_ads.set_index('Date', inplace=True)  # Set Date column as the index
 
 # third dataset with salary and qualification summary text
-df_job_info = pd.read_csv('job_info.csv')
+df_job_info = pd.read_csv('IToppsupdated-05-27extra.csv')
 
 # Create the Streamlit app
 def main():
