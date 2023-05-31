@@ -80,7 +80,7 @@ def main():
                 test_data['predictions'] = xgb_pred
 
                 # Shift the index of test_data by 1 day
-                test_data.index = test_data.index + pd.DateOffset(days=1)
+                #test_data.index = test_data.index + pd.DateOffset(days=1)
 
                 # Create a line graph with original values and predictions
                 plt.rcParams.update({'figure.figsize': (17, 3), 'figure.dpi': 300})
