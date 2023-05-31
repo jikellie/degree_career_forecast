@@ -85,7 +85,7 @@ def main():
                 # Create a line graph with original values and predictions
                 plt.rcParams.update({'figure.figsize': (17, 3), 'figure.dpi': 300})
                 fig, ax = plt.subplots()
-                sns.lineplot(data=selected_job_ads, x=selected_job_ads.index, y=selected_occupation,
+                sns.lineplot(data=selected_job_ads, x=selected_job_ads.index, y='Next Day Jobs',
                              label='Original Values')
                 sns.lineplot(data=test_data, x=test_data.index, y='predictions', color='red', label='Predictions')
                 plt.grid(linestyle='-', linewidth=0.3)
