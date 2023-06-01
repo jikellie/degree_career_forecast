@@ -1,9 +1,11 @@
+# changing to linear regression as better results
+
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 import matplotlib.dates as mpl_dates
-from xgboost import XGBRegressor
+from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error
 import plotly.graph_objects as go
 
@@ -11,7 +13,7 @@ import plotly.graph_objects as go
 df_occupation = pd.read_csv("jobdegrees-IT+FIELD.csv")
 df_job_ads = pd.read_csv('ITopps_T.csv')
 df_job_info = pd.read_csv('IToppsupdated-05-27extra.csv')
-all_industry_df = pd.read_csv("allindustry-comb05-28.csv")
+all_industry_df = pd.read_csv(r"C:\Users\kelli\PycharmProjects\WebscrapingSeek\Careers scraping\daily industry\allindustry-comb05-25.csv")
 
 # Create the Streamlit app
 # Sidebar options
@@ -59,24 +61,24 @@ if selected_option == "Degree Job Search":
                     n = 7
                     return data[:-n], data[-n:]
 
-                xgb_train_data, xgb_test_data = train_test_split(selected_job_ads)
+                lr_train_data, lr_test_data = train_test_split(selected_job_ads)
 
-                X_train = xgb_train_data[:, :-1]
-                y_train = xgb_train_data[:, -1]
-                X_test = xgb_test_data[:, :-1]
-                y_test = xgb_test_data[:, -1]
+                X_train = lr_train_data[:, :-1]
+                y_train = lr_train_data[:, -1]
+                X_test = lr_test_data[:, :-1]
+                y_test = lr_test_data[:, -1]
 
                 # Create the XGB model
-                model = XGBRegressor(objective="reg:squarederror", n_estimators=500)
+                model = LinearRegression()
                 model.fit(X_train, y_train)
 
-                xgb_pred = model.predict(X_test)
+                lr_pred = model.predict(X_test)
 
                 # Evaluate the model
-                mse = mean_squared_error(y_test, xgb_pred)
+                mse = mean_squared_error(y_test, lr_pred)
                 r_squared = model.score(X_test, y_test)
 
-                test_data['predictions'] = xgb_pred
+                test_data['predictions'] = lr_pred
 
                 # adding salary and qualification info
                 job_info_row = df_job_info[df_job_info['name'] == selected_occupation]
