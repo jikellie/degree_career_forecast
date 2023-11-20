@@ -4,3 +4,5 @@ Goal was to create a website which listed jobs that were available based on what
 From this would then allow for time series analysis and forecast of job opportunities based on degree. 
 Job postings per job were webscraped daily from Australian website Indeed, this was then connected to the degrees usually required for these jobs. 
 
+Draft of application available to view on the below URL:
+https://jikellie-career-streamlit-app3-rkm396.streamlit.app/
